@@ -1,0 +1,315 @@
+<div class="jumbotron">
+  <h1>BookStore Application</h1>
+</div>
+<div style="margin: 20px;" id="main-container">
+<h2>Customers</h2>
+<form class="form-inline" style="margin-bottom: 20px;">
+<input class="form-control" type="text" id="csearch" placeholder="Search" autocomplete="off">
+<button class="btn btn-outline-primary" (click)="searchName()" style="margin-left: 20px;" type="button">Search</button>
+<button class="btn btn-primary" (click)="getCustomers()" style="margin-left: 20px;" type="button">View all</button>
+</form>
+<table class="table table-striped w-auto">
+<thead>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Phone number</th>
+    <th>Actions</th>
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor = "let customer of customers">
+    <td>{{customer?.customerID}}</td>
+    <td>{{customer?.name}}</td>
+    <td>{{customer?.phno}}</td>
+    <td>
+      <button (click) = "onshowCart(customer)" class="btn btn-info">View Cart</button>
+      <button (click)="showBooks(customer)" style="margin-left: 15px;" class="btn btn-info">Add books</button>
+      <!--<button (click)="customerOrder(customer.customerID)" type="button" style="margin-left: 15px;" class="btn btn-primary">Your Orders</button>-->
+    </td>
+  </tr>
+</tbody>
+</table>
+
+<button (click)="getOrders()" type="button" class="btn btn-primary">All Orders</button>
+<div id="ordersModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <table class="table table-striped w-auto">
+        <thead>
+          <tr>
+            <th>Customer Name:</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let bk of orderLine">
+            <td>{{bk?.order?.customer?.name}}</td>
+            <td>{{bk?.book?.title}}</td>
+            <td>{{bk?.book?.price}}</td>
+            <td>{{bk?.order?.order_total}}</td>
+            <td>{{bk?.order?.order_status}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<button (click)="onOpenModal('addcustomer')" type="button" style="margin-left: 30px;" class="btn btn-dark">Add Customer</button>
+<h2>Books</h2>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand">Filter</a>
+<form class="form-inline">
+  <input id="rsearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" autocomplete="off">
+  <button (click)="regexTitle()" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+  <div class="input-group mb-3" style="margin-left: 20px;">
+    <div class="input-group-prepend">
+      <button (click)="bookByAuthor()" class="btn btn-outline-primary" type="button">Get by author</button>
+    </div>
+    <select class="custom-select" id="author">
+      <option selected>Choose</option>
+      <option  *ngFor="let author of Authors" value="{{author}}">{{author}}</option>
+    </select>
+  </div>
+  <div class="input-group mb-3" style="margin-left: 20px;">
+    <div class="input-group-prepend">
+      <button (click)="bookByGenre()" class="btn btn-outline-primary" type="button">Get by genre</button>
+    </div>
+    <select class="custom-select" id="genre">
+      <option selected>Choose</option>
+      <option  *ngFor="let genre of Genre" value="{{genre}}">{{genre}}</option>
+    </select>
+  </div>
+  <div class="input-group mb-3" style="margin-left: 20px;">
+    <button (click)="getAllBooks()" class="btn btn-success" type="button">View all</button>
+  </div>
+</form>
+</nav>
+<!-- <ul class="list-group" *ngFor="let b of Books">
+  <li class="list-group-item">{{b}}</li>
+</ul>
+<nav class="navbar navbar-light bg-light">
+  <form class="form-inline">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <button (click)="bookByTitle()" class="btn btn-primary" type="button">Get by title</button>
+      </div>
+      <select class="custom-select" id="input">
+        <option selected>Choose</option>
+        <option  *ngFor="let book of Books" value="{{book.title}}">{{book.title}}</option>
+      </select>
+    </div>
+    <div class="input-group mb-3" style="margin-left: 15px;">
+      <div class="input-group-prepend">
+        <button (click)="bookByAuthor()" class="btn btn-primary" type="button">Get by author</button>
+      </div>
+      <select class="custom-select" id="author">
+        <option selected>Choose</option>
+        <option  *ngFor="let author of Authors" value="{{author}}">{{author}}</option>
+      </select>
+    </div>
+    <div class="input-group mb-3" style="margin-left: 15px;">
+      <div class="input-group-prepend">
+        <button (click)="bookByGenre()" class="btn btn-primary" type="button">Get by genre</button>
+      </div>
+      <select class="custom-select" id="genre">
+        <option selected>Choose</option>
+        <option  *ngFor="let genre of Genre" value="{{genre}}">{{genre}}</option>
+      </select>
+    </div>
+  </form>
+</nav> -->
+
+<table id="bookdiv" style="display: none;" class="table table-striped w-auto">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>ISBN</th>
+      <th>Genre</th>
+      <th>Price</th>
+      <th>Availability</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let book of books">
+    <!---- <td>{{book?.bookID}}</td>-->
+      <td>{{book?.title}}</td>
+      <td>{{book?.author}}</td>
+      <td>{{book?.isbn}} </td>
+      <td>{{book?.genre}}</td>
+      <td>{{book?.price}}</td>
+      <td>{{book?.inStock}} left!</td>
+      <td>
+        <!--(click) = "onDeleteBook('book.bookID')"-->
+        <button (click) = "onDeleteBook(book)" class="btn btn-danger">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<button (click)="onOpenModal('add')" type="button" class="btn btn-dark">Add Book</button>
+<div class="modal fade" id="addBookModal" tabindex="-1" role="dialog" aria-labelledby="addBookModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="label">Add Book</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #addForm="ngForm" (ngSubmit)="onAddBook(addForm)">
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" ngModel name="title" class="form-control" id="title" aria-describedby="title" placeholder="Book title">
+          </div>
+          <div class="form-group">
+            <label for="author">Author</label>
+            <input type="text" ngModel name="author" class="form-control" id="author" aria-describedby="author" placeholder="Book author">
+          </div>
+          <div class="form-group">
+            <label for="isbn">ISBN</label>
+            <input type="text" ngModel name="isbn" class="form-control" id="isbn" placeholder="ISBN">
+          </div>
+          <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" ngModel name="genre" class="form-control" id="genre" placeholder="Genre">
+          </div>
+          <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" ngModel name="price" class="form-control" id="price" placeholder="Price">
+          </div>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
+          <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary" id="save">Save</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addCustomerModal" tabindex="-1" role="dialog" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="label">Add Customer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #addCustomerForm="ngForm" (ngSubmit)="onAddCustomer(addCustomerForm)">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" ngModel name="name" class="form-control" id="name" aria-describedby="name" placeholder="Enter name..">
+          </div>
+          <div class="form-group">
+            <label for="phno">Phone number</label>
+            <input type="text" ngModel name="phno" class="form-control" id="phno" placeholder="e.g,1234567890">
+          </div>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cust-close">Close</button>
+          <button type="submit" class="btn btn-primary" id="cust-save">Save</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="label">Payment Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <table class="table table-striped w-auto">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Order status</th>
+                  <th>Order total</th>
+                  <th>Payment status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{payment?.customer?.name}}</td>
+                  <td>{{payment?.order?.order_status}}</td>
+                  <td>{{payment?.order?.order_total}}</td>
+                  <td>{{payment?.status}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button (click)="makePayment(payment.id,payment.order.id,payment.customer.customerID)" type="button" class="btn btn-success" id="paid_btn">Pay</button>
+            <button (click)="cancelOrder(payment.customer.customerID,payment.order.id)" type="button" style="margin-left: 8px;" class="btn btn-danger" id="cancel_btn">Cancel Order</button>
+            <button type="button" style="margin-left: 8px;" class="btn btn-secondary" data-dismiss="modal" id="pay_close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="nocart" style="display: none;">
+    <h3 class="text-center">Cart is empty!</h3>
+  </div>
+<div style="display: none;" id="cartdiv">
+  <h2>CartItems</h2>
+  <table class="table table-striped clear w-auto">
+    <thead>
+      <tr>
+        <th>Book Title</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor = "let cartitems of cart">
+        <td>{{cartitems?.book?.title}}</td>
+        <td>{{cartitems?.book?.price}}</td>
+        <td>
+          {{cartitems?.quantity}}
+          <button [disabled]="(cartitems.book.inStock) <= 0" (click)="updateCart(cartitems.book,cartitems.customer,cartitems.quantity)" type="button" style="margin-left: 8px;" class="btn btn-light btn-sm">Increase quantity</button>
+        </td>
+        <td>{{cartitems?.subtotal}}</td>
+        <td>
+          <button (click)="onDeleteItem(cartitems.customer,cartitems.book)" type="button" class="btn btn-danger btn-sm">Delete</button>
+         
+        </td>
+      </tr>
+      <button (click)="onPayment()" type="button" class="btn btn-primary btn-lg btn-block">Proceed to Payment</button>
+    </tbody>
+    </table>
+</div>
+
+<div style="display:none;" id="addtocartdiv">
+  <h3>Add books to cart...</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let book of books">
+        <td>{{book?.title}}</td>
+        <td>{{book?.author}}</td>
+        <td>{{book?.genre}}</td>
+        <td>{{book?.price}}</td>
+        <td>
+          <button [disabled]="(book.inStock) <= 0" (click)="onAddToCart(book,1)" class="btn btn-info">Add</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
