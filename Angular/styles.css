@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+
+#carthead{
+    float: left;
+}
+
+#paymentbtn{
+    margin-left: 35px;
+}
+.clear{
+    float:none;
+}
